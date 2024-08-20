@@ -15,7 +15,7 @@ public class InputValidator {
 
 
     public static boolean validateName(String name) {
-        if (name.isEmpty()) {
+        if (name.trim().isEmpty()) {
             System.out.println(">> Name cannot be empty");
             return false;
         }
@@ -50,11 +50,11 @@ public class InputValidator {
     }
 
     public static boolean validateAddress(String address) {
-        if(address.isEmpty()) {
+        if(address.trim().isEmpty()) {
             System.out.println(">> Address cannot be empty");
             return false;
         }
-        if (address.length() >= 300) {
+        if (address.trim().length() >= 300) {
             System.out.println(">> Address must be less than 300 characters");
             return false;
         }
@@ -108,11 +108,11 @@ public class InputValidator {
     }
 
     public static boolean validateUniversity(String university) {
-        if (university.isEmpty()) {
+        if (university.trim().isEmpty()) {
             System.out.println(">> University name cannot be empty");
             return false;
         }
-        if(university.length() >= 200) {
+        if(university.trim().length() >= 200) {
             System.out.println(">> University name must be less than 200 characters");
             return false;
         }
