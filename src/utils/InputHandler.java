@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
+import static utils.Messages.*;
+
 public class InputHandler {
     private static final Scanner scanner = new Scanner(System.in);
 
@@ -16,7 +18,7 @@ public class InputHandler {
     public static String inputName() {
         String fullName;
         do {
-            System.out.print("Enter student's fullName: ");
+            System.out.print(ENTER_NAME);
             fullName = scanner.nextLine();
         } while (!InputValidator.validateName(fullName));
         return fullName;
@@ -26,7 +28,7 @@ public class InputHandler {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String dob;
         do {
-            System.out.print("Enter date of birth (dd/MM/yyyy): ");
+            System.out.print(ENTER_DOB);
             dob = scanner.nextLine();
         } while (!InputValidator.validateDateOfBirth(dob));
         return formatter.parse(dob, LocalDate::from);
@@ -35,48 +37,34 @@ public class InputHandler {
     public static String inputAddress() {
         String address;
         do {
-            System.out.print("Enter address (less than 300 characters): ");
+            System.out.print(ENTER_ADDRESS);
             address = scanner.nextLine().trim();
         } while (!InputValidator.validateAddress(address));
         return address;
     }
 
     public static double inputHeight() {
-        double height;
-        while (true) {
-            System.out.print("Enter height (cm, between 50.0 and 300.0): ");
-            if (scanner.hasNextDouble()) {
-                height = scanner.nextDouble();
-                scanner.nextLine();
-                if (InputValidator.validateHeight(height)) break;
-            } else {
-                System.out.println(">> Invalid input. Please enter a valid number.");
-                scanner.next();
-            }
-        }
-        return height;
+        String heightInput;
+        do {
+            System.out.print(ENTER_HEIGHT);
+            heightInput = scanner.nextLine().trim();
+        } while (!InputValidator.validateHeight(heightInput));
+        return Double.parseDouble(heightInput);
     }
 
     public static double inputWeight() {
-        double weight;
-        while (true) {
-            System.out.print("Enter weight (kg, between 10.0 and 1000.0): ");
-            if (scanner.hasNextDouble()) {
-                weight = scanner.nextDouble();
-                scanner.nextLine();
-                if (InputValidator.validateWeight(weight)) break;
-            } else {
-                System.out.println(">> Invalid input. Please enter a valid number.");
-                scanner.next();
-            }
-        }
-        return weight;
+        String weightInput;
+        do {
+            System.out.print(ENTER_WEIGHT);
+            weightInput = scanner.nextLine().trim();
+        } while (InputValidator.validateWeight(weightInput));
+        return Double.parseDouble(weightInput);
     }
 
     public static String inputStudentCode(Student[] students) {
         String studentCode;
         do {
-            System.out.print("Enter student code (10 characters, not empty, no duplicates): ");
+            System.out.print(ENTER_STUDENT_CODE);
             studentCode = scanner.nextLine().trim();
         } while (!InputValidator.validateStudentCode(studentCode, students));
         return studentCode;
@@ -86,7 +74,7 @@ public class InputHandler {
     public static String inputStudentCode(List<Student> students) {
         String studentCode;
         do {
-            System.out.print("Enter student code (10 characters, not empty, no duplicates): ");
+            System.out.print(ENTER_STUDENT_CODE);
             studentCode = scanner.nextLine().trim();
         } while (!InputValidator.validateStudentCode(studentCode, students));
         return studentCode;
@@ -95,42 +83,28 @@ public class InputHandler {
     public static String inputUniversity() {
         String university;
         do {
-            System.out.print("Enter university name (less than 200 characters, not empty): ");
+            System.out.print(ENTER_UNIVERSITY);
             university = scanner.nextLine().trim();
         } while (!InputValidator.validateUniversity(university));
         return university;
     }
 
     public static int inputStartYear() {
-        int startYear;
-        while (true) {
-            System.out.print("Enter start year (between 1900 and current year): ");
-            if (scanner.hasNextInt()) {
-                startYear = scanner.nextInt();
-                scanner.nextLine();
-                if (InputValidator.validateStartYear(startYear)) break;
-            } else {
-                System.out.println(">> Invalid input. Please enter a valid number.");
-                scanner.next();
-            }
-        }
-        return startYear;
+        String startYear;
+        do {
+            System.out.print(ENTER_START_YEAR);
+            startYear = scanner.nextLine().trim();
+        } while (!InputValidator.validateStartYear(startYear));
+        return Integer.parseInt(startYear);
     }
 
     public static double inputGPA() {
-        double gpa;
-        while (true) {
-            System.out.print("Enter GPA (between 0.0 and 10.0): ");
-            if (scanner.hasNextDouble()) {
-                gpa = scanner.nextDouble();
-                scanner.nextLine();
-                if (InputValidator.validateGPA(gpa)) break;
-            } else {
-                System.out.println(">> Invalid input. Please enter a valid number.");
-                scanner.next();
-            }
-        }
-        return gpa;
+        String gpa;
+        do {
+            System.out.print(ENTER_GPA);
+            gpa = scanner.nextLine().trim();
+        } while (!InputValidator.validateGPA(gpa));
+        return Double.parseDouble(gpa);
     }
 
     // Mang tinh

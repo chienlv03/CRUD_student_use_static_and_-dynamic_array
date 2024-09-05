@@ -1,123 +1,66 @@
 package service;
 
 import entity.Student;
-import menu.MenuUpdateStudent;
 import utils.InputHandler;
+import utils.Messages;
 
 import java.util.*;
+import static menu.HandleUpdateStudent.*;
 
 public class StaticArray implements StudentService {
-    Scanner scanner = new Scanner(System.in);
-    private final int MAX_STUDENTS = 100;
-    private final Student[] students = new Student[MAX_STUDENTS];
+    private static final int MAX_STUDENTS = 100;
+    private static final Student[] students = new Student[MAX_STUDENTS];
     private static int count = 0;
 
-    private boolean isEmpty() {
-        if (count == 0) {
-            System.out.println(">>List students are empty\n");
-            return true;
-        }
-        return false;
+    public static boolean isEmpty() {
+        return count == 0;
     }
 
+    public static Student[] getStudents() {
+        return Arrays.copyOf(students, count);
+    }
+
+
     @Override
-    public void create() {
+    public void create(Student student) {
         if (count < MAX_STUDENTS) {
-            System.out.println("\n============= Create new student ===============");
-            students[count++] = InputHandler.inputStudent(students);
-            System.out.println(">>Create student successfully");
-            getAll();
+            students[count++] = student;
+            System.out.println(Messages.STUDENT_CREATE);
         } else {
-            System.out.println(">>Cannot add more student\n");
+            System.out.println(">> Cannot add more students, array is full.\n");
         }
     }
 
     @Override
     public void getAll() {
-        System.out.println("\n================================================================== LIST STUDENTS ==================================================================");
-        isEmpty();
-        for (Student student : students) {
-            if (student != null) {
-                System.out.println(student);
-            }
-        }
+        Arrays.stream(students)
+                .filter(Objects::nonNull)
+                .forEach(System.out::println);
         System.out.println();
     }
 
     @Override
-    public void findById() {
-        if (isEmpty()) return;
-
-        Long id = null;
-        boolean validInput = false;
-
-        while (!validInput) {
-            System.out.print("Enter student id: ");
-            try {
-                id = scanner.nextLong();
-                scanner.nextLine();
-
-                Long finalId1 = id;
-                validInput = Arrays.stream(students)
-                        .anyMatch(student -> student != null && Objects.equals(student.getId(), finalId1));
-
-                if (!validInput) {
-                    System.out.println(">> Cannot find student with id: " + id + ". Please try again.\n");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println(">> Invalid input. Please enter a numeric student id.\n");
-                scanner.nextLine(); // Clear the buffer to avoid infinite loop
-            }
-        }
-
-        Long finalId = id;
-        Arrays.stream(students)
-                .filter(student -> student != null && Objects.equals(student.getId(), finalId))
-                .findFirst()
-                .ifPresent(student -> System.out.println(student + "\n"));
+    public Optional<Student> findById(Long id) {
+        return Arrays.stream(students)
+                .filter(student -> student != null && Objects.equals(student.getId(), id))
+                .findFirst();
     }
 
     @Override
-    public void update() {
-        if (isEmpty()) return;
-
-        Long id = null;
-        boolean validInput = false;
-
-        while (!validInput) {
-            System.out.print("Enter student id to update: ");
-            try {
-                id = scanner.nextLong();
-                scanner.nextLine();
-
-                Long finalId1 = id;
-                validInput = Arrays.stream(students)
-                        .anyMatch(student -> student != null && Objects.equals(student.getId(), finalId1));
-            } catch (InputMismatchException e) {
-                System.out.println(">> Invalid ID, please enter a valid numerical ID.");
-                scanner.nextLine();
-            }
-        }
-
-        Long finalId = id;
-        Optional<Student> studentOpt = Arrays.stream(students)
-                .filter(student -> Objects.equals(student.getId(), finalId))
-                .findFirst();
+    public void update(Long id) {
+        Optional<Student> studentOpt = findById(id);
 
         if (studentOpt.isPresent()) {
+            Scanner scanner = new Scanner(System.in);
             Student student = studentOpt.get();
-            int choice;
-            do {
-                try {
-                    choice = MenuUpdateStudent.getChoice(id, scanner);
-                } catch (InputMismatchException e) {
-                    System.out.println(">> Invalid option, please try again.");
-                    scanner.nextLine();
-                    choice = -1;
-                }
+            while (true) {
+                int choice = getValidChoice(scanner, id);
 
+                if (choice == 0) {
+                    break;
+                }
                 switch (choice) {
-                    case 1 -> student.setStudentCode(InputHandler.inputStudentCode(students));
+                    case 1 -> student.setStudentCode(InputHandler.inputStudentCode(StaticArray.getStudents()));
                     case 2 -> student.setName(InputHandler.inputName());
                     case 3 -> student.setDob(InputHandler.inputDateOfBirth());
                     case 4 -> student.setAddress(InputHandler.inputAddress());
@@ -126,61 +69,30 @@ public class StaticArray implements StudentService {
                     case 7 -> student.setUniversity(InputHandler.inputUniversity());
                     case 8 -> student.setStartYear(InputHandler.inputStartYear());
                     case 9 -> student.setGpa(InputHandler.inputGPA());
-                    case 0 -> System.out.println(">> Changes saved.");
-                    default -> System.out.println(">> Invalid option, please try again.");
                 }
-                if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5 || choice == 6 || choice == 7 || choice == 8 || choice == 9) {
-                    System.out.println(">> Update student successfully");
-                }
-            } while (choice != 0);
-            System.out.println("\n==================== Student after update ====================");
+                System.out.println(Messages.STUDENT_UPDATE);
+            }
+            System.out.println("==================== Student after update ====================");
             System.out.println(student);
             System.out.println();
         } else {
-            System.out.println(">> Cannot find student with id: " + id + "\n");
+            System.out.println(Messages.ERROR_NOT_FOUND_ID + id + "\n");
         }
     }
 
+
+    //////////////////////////////////////////////////////////////////
     @Override
-    public void remove() {
-        if (isEmpty()) return;
-
-        Long id = null;
-        boolean validInput = false;
-
-        while (!validInput) {
-            System.out.print("Enter student id to update: ");
-            try {
-                id = scanner.nextLong();
-                validInput = true;
-            } catch (InputMismatchException e) {
-                System.out.println(">> Invalid ID, please enter a valid numerical ID.");
-                scanner.nextLine();
-            }
-
-        }
-
-        Long finalId = id;
-        Optional<Student> studentOpt = Arrays.stream(students)
-                .filter(student -> Objects.equals(student.getId(), finalId))
-                .findFirst();
+    public void remove(Long id) {
+        Optional<Student> studentOpt = findById(id);
 
         if (studentOpt.isPresent()) {
-            for (int i = 0; i < count; i++) {
-                if (Objects.equals(students[i].getId(), id)) {
-                    // Shift elements left
-                    for (int j = i; j < count - 1; j++) {
-                        students[j] = students[j + 1];
-                    }
-                    // Nullify the last element
-                    students[count - 1] = null;
-                    count--;
-                    System.out.println(">> Remove student successfully");
-                    getAll();
-                    return;
-                }
-            }
+            int index = Arrays.asList(students).indexOf(studentOpt.get());
+            System.arraycopy(students, index + 1, students, index, count - index - 1);
+            students[--count] = null;
+            System.out.println(Messages.STUDENT_REMOVED);
+        } else {
+            System.out.println(Messages.ERROR_NOT_FOUND_ID + id);
         }
-        System.out.println(">> Cannot find student with id: " + id);
     }
 }
